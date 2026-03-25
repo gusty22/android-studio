@@ -53,8 +53,8 @@
         android:id="@+id/btnSair"
         style="@style/FormButtonStyle"
         android:layout_width="match_parent"
-        android:text="Sair da Conta"
-        android:background="@drawable/shape_button_primary"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:text="Sair da Conta" />
 
 </LinearLayout>

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class FormLogin extends AppCompatActivity {
 
+    // DECLARAÇÃO DAS VARIÁVEIS (O erro indicava que isto estava em falta)
     private EditText edtEmail, edtSenha;
     private Button btnLogin;
     private TextView btnCriarConta;
@@ -33,6 +34,7 @@ public class FormLogin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form_login);
 
+        // LIGAÇÃO COM OS IDs DO XML
         edtEmail = findViewById(R.id.edtEmail);
         edtSenha = findViewById(R.id.edtSenha);
         btnLogin = findViewById(R.id.btnLogin);
@@ -51,23 +53,21 @@ public class FormLogin extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Lógica para revelar/esconder a senha ao clicar no ícone do olho
+        // Lógica para o ícone do olho na palavra-passe
         edtSenha.setOnTouchListener((v, event) -> {
             final int DRAWABLE_RIGHT = 2;
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (event.getRawX() >= (edtSenha.getRight() - edtSenha.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width() - edtSenha.getPaddingRight())) {
                     if (isSenhaVisivel) {
-                        // Ocultar senha
                         edtSenha.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         edtSenha.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_password, 0, R.drawable.ic_eye_off, 0);
                         isSenhaVisivel = false;
                     } else {
-                        // Mostrar senha
                         edtSenha.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
                         edtSenha.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_password, 0, R.drawable.ic_eye, 0);
                         isSenhaVisivel = true;
                     }
-                    edtSenha.setSelection(edtSenha.getText().length()); // Mantém o cursor no fim
+                    edtSenha.setSelection(edtSenha.getText().length());
                     return true;
                 }
             }
@@ -107,8 +107,8 @@ public class FormLogin extends AppCompatActivity {
 
         if (senhaDigitada.equals(senhaArmazenada)) {
             Intent intent = new Intent(FormLogin.this, TelaPerfil.class);
-            intent.putExtra("nomeUsuario", partes[0]); // Passa o Nome
-            intent.putExtra("emailUsuario", email);    // Passa o Email EXATO cadastrado
+            intent.putExtra("nomeUsuario", partes[0]);
+            intent.putExtra("emailUsuario", email);
             startActivity(intent);
             finish();
         } else {

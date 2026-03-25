@@ -42,11 +42,12 @@
         <Button
             android:id="@+id/btnLogin"
             style="@style/FormButtonStyle"
-            android:layout_width="220dp"
+            android:layout_width="240dp"
+            android:layout_height="56dp"
             android:layout_gravity="center_horizontal"
-            android:text="Login"
-            android:background="@drawable/shape_button_primary"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Login" />
 
         <TextView
             android:id="@+id/btnCriarConta"
@@ -60,5 +61,4 @@
             android:focusable="true"/>
 
     </LinearLayout>
-
 </ScrollView>

@@ -23,7 +23,6 @@ public class FormCadastro extends AppCompatActivity {
     private Button btnCadastrar;
     private TextView btnVoltarLogin;
 
-    // Variável para controlar se a senha está visível ou não
     private boolean isSenhaVisivel = false;
 
     private SharedPreferences sharedPreferences;
@@ -35,7 +34,6 @@ public class FormCadastro extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form_cadastro);
 
-        // Ligação com os elementos do XML
         edtNome = findViewById(R.id.edtNome);
         edtEmail = findViewById(R.id.edtEmail);
         edtSenha = findViewById(R.id.edtSenha);
@@ -44,37 +42,31 @@ public class FormCadastro extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        // Ação do botão de cadastrar
         btnCadastrar.setOnClickListener(v -> {
             if (validarCampos()) {
                 cadastrarUsuario();
             }
         });
 
-        // Ação do botão de voltar para o login
         btnVoltarLogin.setOnClickListener(v -> {
             Intent intent = new Intent(FormCadastro.this, FormLogin.class);
             startActivity(intent);
             finish();
         });
 
-        // Lógica para revelar/esconder a senha ao clicar no ícone do olho
         edtSenha.setOnTouchListener((v, event) -> {
-            final int DRAWABLE_RIGHT = 2; // Posição do ícone à direita
+            final int DRAWABLE_RIGHT = 2;
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (event.getRawX() >= (edtSenha.getRight() - edtSenha.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width() - edtSenha.getPaddingRight())) {
                     if (isSenhaVisivel) {
-                        // Ocultar senha
                         edtSenha.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         edtSenha.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_password, 0, R.drawable.ic_eye_off, 0);
                         isSenhaVisivel = false;
                     } else {
-                        // Mostrar senha
                         edtSenha.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
                         edtSenha.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_password, 0, R.drawable.ic_eye, 0);
                         isSenhaVisivel = true;
                     }
-                    // Mantém o cursor no fim do texto
                     edtSenha.setSelection(edtSenha.getText().length());
                     return true;
                 }
@@ -112,7 +104,6 @@ public class FormCadastro extends AppCompatActivity {
             return false;
         }
 
-        // Verifica se já existe um utilizador com esse email
         if (sharedPreferences.contains(email)) {
             edtEmail.setError("Este email já está cadastrado");
             edtEmail.requestFocus();
@@ -127,14 +118,12 @@ public class FormCadastro extends AppCompatActivity {
         String email = edtEmail.getText().toString().trim();
         String senha = edtSenha.getText().toString();
 
-        // Armazena o usuário no SharedPreferences
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(email, nome + ";" + senha); // formato: nome;senha
+        editor.putString(email, nome + ";" + senha);
         editor.apply();
 
         Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show();
 
-        // Volta para a tela de login após o sucesso
         Intent intent = new Intent(FormCadastro.this, FormLogin.class);
         startActivity(intent);
         finish();
