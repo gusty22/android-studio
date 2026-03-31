@@ -1,9 +1,7 @@
 package com.example.gustavo;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
@@ -17,16 +15,20 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+// IMPORTAÇÕES DO FIREBASE
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class FormLogin extends AppCompatActivity {
 
-    // DECLARAÇÃO DAS VARIÁVEIS (O erro indicava que isto estava em falta)
     private EditText edtEmail, edtSenha;
     private Button btnLogin;
     private TextView btnCriarConta;
     private boolean isSenhaVisivel = false;
 
-    private SharedPreferences sharedPreferences;
-    private static final String PREFS_NAME = "UsuariosApp";
+    // VARIÁVEIS DO FIREBASE
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -34,13 +36,14 @@ public class FormLogin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form_login);
 
-        // LIGAÇÃO COM OS IDs DO XML
         edtEmail = findViewById(R.id.edtEmail);
         edtSenha = findViewById(R.id.edtSenha);
         btnLogin = findViewById(R.id.btnLogin);
         btnCriarConta = findViewById(R.id.btnCriarConta);
 
-        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        // INICIANDO O FIREBASE
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         btnLogin.setOnClickListener(v -> {
             if (validarCampos()) {
@@ -53,7 +56,6 @@ public class FormLogin extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Lógica para o ícone do olho na palavra-passe
         edtSenha.setOnTouchListener((v, event) -> {
             final int DRAWABLE_RIGHT = 2;
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -85,7 +87,7 @@ public class FormLogin extends AppCompatActivity {
             return false;
         }
         if (TextUtils.isEmpty(senha)) {
-            edtSenha.setError("Informe a senha");
+            edtSenha.setError("Informe a palavra-passe");
             edtSenha.requestFocus();
             return false;
         }
@@ -96,23 +98,29 @@ public class FormLogin extends AppCompatActivity {
         String email = edtEmail.getText().toString().trim();
         String senhaDigitada = edtSenha.getText().toString();
 
-        if (!sharedPreferences.contains(email)) {
-            Toast.makeText(this, "Utilizador não registado", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        // COMANDO PARA LOGIN NO FIREBASE
+        mAuth.signInWithEmailAndPassword(email, senhaDigitada).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
 
-        String dadosUsuario = sharedPreferences.getString(email, "");
-        String[] partes = dadosUsuario.split(";");
-        String senhaArmazenada = partes[1];
+                // CORREÇÃO: Obter o ID diretamente da tarefa de login (Mais seguro)
+                String usuarioID = task.getResult().getUser().getUid();
 
-        if (senhaDigitada.equals(senhaArmazenada)) {
-            Intent intent = new Intent(FormLogin.this, TelaPerfil.class);
-            intent.putExtra("nomeUsuario", partes[0]);
-            intent.putExtra("emailUsuario", email);
-            startActivity(intent);
-            finish();
-        } else {
-            Toast.makeText(this, "Senha incorreta", Toast.LENGTH_SHORT).show();
-        }
+                // Busca o nome da pessoa no Banco de Dados
+                db.collection("Usuarios").document(usuarioID).get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            String nome = documentSnapshot.getString("nome");
+
+                            // Manda para a TelaPerfil com os dados
+                            Intent intent = new Intent(FormLogin.this, TelaPerfil.class);
+                            intent.putExtra("nomeUsuario", nome);
+                            intent.putExtra("emailUsuario", email);
+                            startActivity(intent);
+                            finish();
+                        });
+
+            } else {
+                Toast.makeText(this, "E-mail ou palavra-passe incorretos", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

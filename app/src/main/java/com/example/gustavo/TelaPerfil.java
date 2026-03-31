@@ -7,6 +7,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+// IMPORTAÇÃO DO FIREBASE (Necessária para o Logout)
+import com.google.firebase.auth.FirebaseAuth;
+
 public class TelaPerfil extends AppCompatActivity {
 
     private TextView txtNomePerfil, txtEmailPerfil;
@@ -35,6 +38,10 @@ public class TelaPerfil extends AppCompatActivity {
         }
 
         btnSair.setOnClickListener(v -> {
+            // CORREÇÃO: Faz o Logout (Sair da sessão) no Firebase
+            FirebaseAuth.getInstance().signOut();
+
+            // Volta para a tela de Login
             Intent intent = new Intent(TelaPerfil.this, FormLogin.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
