@@ -155,13 +155,28 @@ public class FormCadastro extends AppCompatActivity {
     }
 
     // A função recebe o ID gerado pelo Firebase para gravar no Firestore
+    // A função recebe o ID gerado pelo Firebase para gravar no Firestore
     private void salvarDadosUsuario(String usuarioID) {
+        // Capturamos os textos digitados
         String nome = edtNome.getText().toString().trim();
+        String email = edtEmail.getText().toString().trim();
 
+        // Montamos o "pacote" com todos os dados
         Map<String, Object> usuario = new HashMap<>();
         usuario.put("nome", nome);
+        usuario.put("email", email);   // Agora o e-mail será salvo
+        usuario.put("uid", usuarioID); // Agora o UID será salvo
 
-        // Salva o nome na Base de Dados Firestore na coleção (pasta) "Usuarios"
-        db.collection("Usuarios").document(usuarioID).set(usuario);
+        // Salva os dados na Base de Dados Firestore na coleção (pasta) "Usuarios"
+        // Utilizamos o .set() com o usuarioID, que é uma prática excelente!
+        db.collection("Usuarios").document(usuarioID).set(usuario)
+                .addOnSuccessListener(aVoid -> {
+                    // Log de sucesso (igual ao slide: println("Documento adicionado..."))
+                    System.out.println("Documento adicionado com ID: " + usuarioID);
+                })
+                .addOnFailureListener(e -> {
+                    // Log de falha
+                    System.out.println("Erro ao adicionar documento: " + e.getMessage());
+                });
     }
 }
